@@ -202,6 +202,8 @@ public class ContextoK {
 				freqs.put(simb, freq);
 			}			
 			linha = new Scanner(scanner.nextLine());
+			if(!linha.hasNext())
+				break;
 			prefixo = linha.next();
 		}	
 	}
