@@ -2,16 +2,18 @@
 package ppmc.api;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Scanner;
 
 /**
  *
  */
-public class ContextoMenosUm extends Contexto {
+public class ContextoKMenosUm extends ContextoK {
 
     int[] freqs;
     int total;
 
-    public ContextoMenosUm(int maiorSimbolo) {
+    public ContextoKMenosUm(int maiorSimbolo) {
         super(maiorSimbolo);
         freqs = new int[maiorSimbolo+1];
         total = maiorSimbolo + 1;
@@ -44,9 +46,10 @@ public class ContextoMenosUm extends Contexto {
         
         if(simbolo == maxSimbolos)            
             throw new IOException("EOF");
-        
-        freqs[simbolo] = 0;
-        total--;
+        if(modificarModelo){
+        	freqs[simbolo] = 0;
+        	total--;
+        }
         
     }
 
@@ -79,13 +82,52 @@ public class ContextoMenosUm extends Contexto {
         
         arithDecoder.removeSymbolFromStream(low, high, total);
         
-        freqs[simbolo] = 0;
-
-        total--;
+        if(modificarModelo){
+        	freqs[simbolo] = 0;
+        	total--;
+        }
         
         return simbolo;
     }
 
+	@Override
+	public void fromScanner(Scanner scanner) {
+		Scanner linha;
+		String prefixo, contexto = "";
+		
+		for(int i = 0; i < freqs.length; i++)
+			freqs[i] = 0;
+		
+		scanner.nextLine();
+		linha = new Scanner(scanner.nextLine());
+		prefixo = linha.next();
+		
+		while(!prefixo.equals("new k") && scanner.hasNextLine()) {
+			if(prefixo.equals("o=")){
+				int simb = linha.nextInt();
+				freqs[simb] = 1;
+			}			
+			linha = new Scanner(scanner.nextLine());
+			if(!linha.hasNext())break;
+			prefixo = linha.next();
+		}	
+		
+	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+    	builder.append("new k\n");
+    	for(int simb = 0; simb < freqs.length; simb++){
+    		if(freqs[simb] == 1)
+    			builder.append("o= " + simb + "\n");
+   		}    		
+    	
+    	return builder.toString();
+	}
+
+
+    
+    
 
 }

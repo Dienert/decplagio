@@ -6,9 +6,9 @@ import java.io.IOException;
 /**
  *
  */
-public class ContextoZero extends Contexto {
+public class ContextoKZero extends ContextoK {
 
-    public ContextoZero(int maiorSimbolo) {
+    public ContextoKZero(int maiorSimbolo) {
         super(maiorSimbolo);
     }
 

@@ -1,48 +1,100 @@
 
 package ppmc.encoder;
 
-import ppmc.api.Contexto;
-import ppmc.api.ContextoMenosUm;
-import ppmc.api.ContextoZero;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Scanner;
+
+import com.sun.org.apache.bcel.internal.generic.SALOAD;
+
+import ppmc.api.ContextoK;
+import ppmc.api.ContextoKMenosUm;
+import ppmc.api.ContextoKZero;
 import ppmc.codificador.ArithEncoder;
 import ppmc.io.BitInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 /**
  *
  */
 public class Encoder {
 
-    Contexto contextos[];
+    ContextoK contextosK[];
 
-    public Encoder(int nBitsPorSimbolo, int maiorContexto, String input, String output) throws IOException {
-        int maiorSimbolo = (int)Math.pow(2, nBitsPorSimbolo);
-        Contexto.setArithEncoder(new ArithEncoder(new FileOutputStream(output)));
-        contextos = new Contexto[maiorContexto+2];
-        contextos[0] = new ContextoMenosUm(maiorSimbolo);
-        contextos[1] = new ContextoZero(maiorSimbolo);
-        contextos[1].setProximoContexto(contextos[0]);
-        for(int i = 2; i < maiorContexto + 2; i++){
-            contextos[i] = new Contexto(maiorSimbolo);
-            contextos[i].setProximoContexto(contextos[i-1]);
-        }
+    public Encoder(int nBitsPorSimbolo, int maiorContexto, String input, String output) throws IOException{
+    	this(nBitsPorSimbolo, maiorContexto, input, output, null, null);
+    }
+    
+    public Encoder(int nBitsPorSimbolo, int maiorContexto, String input, String output, String modelo, String novoModelo) throws IOException {
+        
+    	int maiorSimbolo = (int)Math.pow(2, nBitsPorSimbolo), lido = 0;
+        
+        ContextoK.setArithEncoder(new ArithEncoder(new FileOutputStream(output)));
+        
+        initContextosK(maiorContexto, maiorSimbolo);
+        
+        readContextosK(modelo);
+        
         BitInputStream bis = new BitInputStream(input, false);
-        int lido = 0;
+        
         String contexto = "";
+        
         try{
             for(int i = 1; i < maiorContexto+1; i++){
                 lido = bis.nextBits(nBitsPorSimbolo);                
-                contextos[i].codifica(contexto, lido);
+                contextosK[i].codifica(contexto, lido);
                 contexto += (char)lido;
             }
             while(lido < maiorSimbolo + 1){
                 lido = bis.nextBits(nBitsPorSimbolo);
-                contextos[maiorContexto+1].codifica(contexto, lido);
+                contextosK[maiorContexto+1].codifica(contexto, lido);
                 contexto = contexto.substring(1) + (char)lido;
             }
         } catch(IOException ex){
-            Contexto.getArithEncoder().close();
+            ContextoK.getArithEncoder().close();
+        }
+        
+        saveContextosK(maiorContexto, novoModelo);
+    }
+    
+    
+    private void initContextosK(int maiorK, int maiorSimbolo){
+    	contextosK = new ContextoK[maiorK+2];
+        contextosK[0] = new ContextoKMenosUm(maiorSimbolo);
+        contextosK[1] = new ContextoKZero(maiorSimbolo);
+        contextosK[1].setProximoContexto(contextosK[0]);
+        for(int i = 2; i < maiorK + 2; i++){
+            contextosK[i] = new ContextoK(maiorSimbolo);
+            contextosK[i].setProximoContexto(contextosK[i-1]);
+        }        
+    }
+    
+    private void readContextosK(String modelo){
+    	if(modelo != null){
+        	try {        		
+        		Scanner scanner = new Scanner(new File(modelo));
+        		for(int i = 0; i < contextosK.length; i++){
+        			contextosK[i].fromScanner(scanner);
+        		}        		
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
         }
     }
+    
+    private void saveContextosK(int maiorK, String modelo){
+    	if(modelo != null){
+        	try {        		
+        		FileWriter fileWriter = new FileWriter(modelo);
+        		for(int i = 0; i < contextosK.length; i++){
+        			fileWriter.write(contextosK[i].toString());
+        		}        		
+        	} catch (Exception e) {
+        		e.printStackTrace();
+        	}
+        }
+    }
+    
 }

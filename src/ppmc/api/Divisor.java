@@ -16,7 +16,7 @@ public class Divisor {
         BitOutputStream bos = new BitOutputStream(output);
         
         bis.nextBits(off);
-        int i = 0, lido = bis.nextBits(nBitsALer), cont = 0;
+        int lido = bis.nextBits(nBitsALer), cont = 0;
         while (lido != EOF) {
             cont += nBitsALer;
             bos.print(lido, nBitsALer);
