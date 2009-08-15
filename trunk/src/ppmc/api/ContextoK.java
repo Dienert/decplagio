@@ -1,32 +1,34 @@
 
 package ppmc.api;
 
-import ppmc.codificador.ArithDecoder;
-import ppmc.codificador.ArithEncoder;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Scanner;
+
+import ppmc.codificador.ArithDecoder;
+import ppmc.codificador.ArithEncoder;
 
 
-public class Contexto {
+public class ContextoK {
 
     protected HashMap<String, HashMap<Integer, Integer>> map;
-    protected Contexto proximo;
+    protected ContextoK proximo;
     protected int maxSimbolos;
-    protected static boolean debug;
+    protected static boolean debug, modificarModelo;
     protected static ArithEncoder arithEncoder;
     protected static ArithDecoder arithDecoder;
 
-    public Contexto(int maiorSimbolo){
+    public ContextoK(int maiorSimbolo){
         map = new HashMap<String, HashMap<Integer, Integer>>();
         this.maxSimbolos = maiorSimbolo;
     }
 
-    public void setProximoContexto(Contexto proximo){
+    public void setProximoContexto(ContextoK proximo){
         this.proximo = proximo;
     }
 
-    public void inserirContexto(String contexto, int simbolo, int escape){
-        HashMap<Integer, Integer> freqs = new HashMap<Integer, Integer>();
+    public void inserirContexto(String contexto, int simbolo, int escape){        
+    	HashMap<Integer, Integer> freqs = new HashMap<Integer, Integer>();
         freqs.put(simbolo, 1);
         freqs.put(escape, 1);
         map.put(contexto, freqs);
@@ -48,7 +50,8 @@ public class Contexto {
         
         if(freqs == null){
             proximo.codifica(contexto.substring(1), simbolo, nosAnteriores);
-            inserirContexto(contexto, simbolo, escape);
+            if(modificarModelo)
+            	inserirContexto(contexto, simbolo, escape);
         } else {
             if(freqs.get(simbolo) == null)                
                 aCodificar = escape;
@@ -78,10 +81,13 @@ public class Contexto {
             
             if(aCodificar == escape) {
                 proximo.codifica(contexto.substring(1), simbolo, nosAnteriores);
-                incContadorDoSimbolo(freqs, escape);
+                if(modificarModelo)
+                	incContadorDoSimbolo(freqs, escape);
             }
-            incContadorDoSimbolo(freqs, simbolo);
-            map.put(contexto, freqs);
+            if(modificarModelo){
+            	incContadorDoSimbolo(freqs, simbolo);
+            	map.put(contexto, freqs);
+            }
         }
         
         if(debug) {
@@ -106,7 +112,8 @@ public class Contexto {
         
         if(freqs == null){
             simbolo = proximo.getSimbolo(contexto.substring(1), nosAnteriores);
-            inserirContexto(contexto, simbolo, escape);
+            if(modificarModelo)
+            	inserirContexto(contexto, simbolo, escape);
         } else {
             for(int i = 0; i < escape+2; i++)
                 if(freqs.get(i) != null && !nosAnteriores[i])
@@ -125,7 +132,8 @@ public class Contexto {
             
             arithDecoder.removeSymbolFromStream(low, high, total);
             
-            incContadorDoSimbolo(freqs, simbolo);
+            if(modificarModelo)
+            	incContadorDoSimbolo(freqs, simbolo);
             
             /* Debug */
             if(debug && simbolo == escape)
@@ -140,11 +148,11 @@ public class Contexto {
                         nosAnteriores[i] = true;                
                 
                 simbolo = proximo.getSimbolo(contexto.substring(1), nosAnteriores);                
-
-                incContadorDoSimbolo(freqs, simbolo);
+                if(modificarModelo)
+                	incContadorDoSimbolo(freqs, simbolo);
             }
-            
-            map.put(contexto, freqs);
+            if(modificarModelo)
+            	map.put(contexto, freqs);
         }
         
         return simbolo;
@@ -155,7 +163,7 @@ public class Contexto {
     }
 
     public static void setArithEncoder(ArithEncoder arithEncoder) {
-        Contexto.arithEncoder = arithEncoder;
+        ContextoK.arithEncoder = arithEncoder;
     }
 
     public static ArithDecoder getArithDecoder() {
@@ -163,7 +171,52 @@ public class Contexto {
     }
 
     public static void setArithDecoder(ArithDecoder arithDecoder) {
-        Contexto.arithDecoder = arithDecoder;
-    }    
+        ContextoK.arithDecoder = arithDecoder;
+    }
 
+	public HashMap<String, HashMap<Integer, Integer>> getMap() {
+		return map;
+	}
+
+	public void setMap(HashMap<String, HashMap<Integer, Integer>> map) {
+		this.map = map;
+	}    
+
+	public void fromScanner(Scanner scanner){
+		Scanner linha = null;
+		String prefixo = "", contexto = "";
+		HashMap<Integer, Integer> freqs = new HashMap<Integer, Integer>();
+		if(scanner.hasNextLine()){
+		linha = new Scanner(scanner.nextLine());
+		prefixo = linha.next();
+		}
+		
+		while(!prefixo.equals("new k") && scanner.hasNextLine()) {
+			if(prefixo.equals("c=")){
+				map.put(contexto, freqs);
+				contexto = linha.nextLine();
+				freqs = new HashMap<Integer, Integer>();
+			} else if(prefixo.equals("o=")){
+				int simb = linha.nextInt();
+				int freq = linha.nextInt();
+				freqs.put(simb, freq);
+			}			
+			linha = new Scanner(scanner.nextLine());
+			prefixo = linha.next();
+		}	
+	}
+	
+    public String toString() {
+    	StringBuilder builder = new StringBuilder();
+    	builder.append("new k\n");
+    	for(String cont : map.keySet()){
+    		builder.append("c= " +  cont + "\n");
+    		for(int simb : map.get(cont).keySet()){
+    			builder.append("o= " + simb + " " + map.get(cont).get(simb) + "\n");
+    		}    		
+    	}
+    	return builder.toString();
+    }
+	
 }
+
