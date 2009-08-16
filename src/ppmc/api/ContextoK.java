@@ -1,6 +1,7 @@
 
 package ppmc.api;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -17,11 +18,70 @@ public class ContextoK {
     protected static boolean debug, modificarModelo;
     protected static ArithEncoder arithEncoder;
     protected static ArithDecoder arithDecoder;
+    protected static FileWriter fileWriter;
+    
+//    static {
+//    	try {
+//			fileWriter = new FileWriter("files/chars.inf");
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//    }
 
     public ContextoK(int maiorSimbolo){
         map = new HashMap<String, HashMap<Integer, Integer>>();
         this.maxSimbolos = maiorSimbolo;
     }
+    
+    public void addAoModelo(String contexto, int simbolo) throws IOException {
+    	addAoModelo(contexto, simbolo, new boolean[maxSimbolos + 2]);
+    }
+    
+    protected void addAoModelo(String contexto, int simbolo, boolean nosAnteriores[]) throws IOException {
+    	
+        
+        int escape = maxSimbolos;
+        HashMap<Integer, Integer> freqs = map.get(contexto);
+        
+        if(freqs == null){
+            proximo.addAoModelo(contexto.substring(1), simbolo, nosAnteriores);
+            inserirContexto(contexto, simbolo, escape);
+        } else {
+            if(freqs.get(simbolo) == null){
+                proximo.addAoModelo(contexto.substring(1), simbolo, nosAnteriores);
+               	incContadorDoSimbolo(freqs, escape);
+            }
+            incContadorDoSimbolo(freqs, simbolo);            
+            map.put(contexto, freqs);
+        }                
+    }
+
+    public double getInfo(String contexto, int simbolo) throws IOException {
+    	return getInfo(contexto, simbolo, new boolean[maxSimbolos + 2]);
+    }
+
+    protected double getInfo(String contexto, int simbolo, boolean nosAnteriores[]) throws IOException {
+    	
+        int aCodificar = simbolo, total = 0, escape = maxSimbolos;
+        HashMap<Integer, Integer> freqs = map.get(contexto);
+        
+        if(freqs == null){
+            return proximo.getInfo(contexto.substring(1), simbolo, nosAnteriores);
+        } else {
+        	
+        	for(int i = 0; i < escape+2; i++){
+        		if(freqs.get(i) != null && !nosAnteriores[i]){
+        			total += freqs.get(i);
+        		}
+        	}
+        	
+            if(freqs.get(simbolo) == null)                
+            	return DesvioPadrao.log2(((double)total)/freqs.get(escape)) + proximo.getInfo(contexto.substring(1), simbolo, nosAnteriores);
+                        
+            return DesvioPadrao.log2(((double)total)/freqs.get(aCodificar));            
+        }
+    }
+    
 
     public void setProximoContexto(ContextoK proximo){
         this.proximo = proximo;
@@ -50,8 +110,7 @@ public class ContextoK {
         
         if(freqs == null){
             proximo.codifica(contexto.substring(1), simbolo, nosAnteriores);
-            if(modificarModelo)
-            	inserirContexto(contexto, simbolo, escape);
+            inserirContexto(contexto, simbolo, escape);
         } else {
             if(freqs.get(simbolo) == null)                
                 aCodificar = escape;
@@ -77,6 +136,7 @@ public class ContextoK {
             
             nosAnteriores[escape] = false;
 
+//            fileWriter.write(freqs.get(aCodificar)+" "+total + " ");
             arithEncoder.encode(low, high, total);
             
             if(aCodificar == escape) {
@@ -88,18 +148,11 @@ public class ContextoK {
             	incContadorDoSimbolo(freqs, simbolo);
             	map.put(contexto, freqs);
             }
-        }
-        
-        if(debug) {
-            System.out.printf("Buscando %c no contexto '%s'\n", simbolo, contexto);
-            if(aCodificar == maxSimbolos)
-                System.out.printf("Codificando escape no contexto '%s' com low = %d high = %d total = %d\n", contexto, low, high, total);
-            else
-                System.out.printf("Codificando %c no contexto '%s' com low = %d high = %d total = %d\n", simbolo, contexto, low, high, total);
-        }
-        
+        }                
     }
+    
 
+    
     public int getSimbolo(String contexto) throws IOException {
         return getSimbolo(contexto, new boolean[maxSimbolos+2]);
     }
@@ -187,8 +240,9 @@ public class ContextoK {
 		String prefixo = "", contexto = "";
 		HashMap<Integer, Integer> freqs = new HashMap<Integer, Integer>();
 		if(scanner.hasNextLine()){
-		linha = new Scanner(scanner.nextLine());
-		prefixo = linha.next();
+			linha = new Scanner(scanner.nextLine());
+			if(linha.hasNext())
+				prefixo = linha.next();
 		}
 		
 		while(!prefixo.equals("new k") && scanner.hasNextLine()) {

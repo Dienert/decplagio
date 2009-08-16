@@ -15,16 +15,16 @@ public class Main {
 //        Contexto.debug = true;
         long time = System.currentTimeMillis();
         String aCompactar = "files/scriTabelasReduzidoPostgres.sql";
-        String comprimido = "files/comp_sem_modificar.ppm";
+        String comprimido = "files/comp2.ppm";
         String descompactado = "files/sTRP.sql";
         String modelo = "files/modelo.txt";
         
-//        ContextoK.modificarModelo = true;
+        ContextoK.modificarModelo = true;
 //        
-//        new Encoder(8, 1, aCompactar, comprimido, null, modelo);
-//        new Decoder(8, 1, comprimido,descompactado, null, null);
-        new Encoder(8, 1, aCompactar, comprimido, modelo, null);
-        new Decoder(8, 1, comprimido,descompactado, modelo, null);
+        new Encoder(8, 6, aCompactar, comprimido, null, modelo);
+        new Decoder(8, 6, comprimido,descompactado, null, null);
+//        new Encoder(8, 6, aCompactar, comprimido, modelo, null);
+//        new Decoder(8, 6, comprimido,descompactado, modelo, null);
    
         System.out.println(System.currentTimeMillis() - time+"ns");
         

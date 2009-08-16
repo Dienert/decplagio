@@ -11,6 +11,19 @@ public class ContextoKZero extends ContextoK {
     public ContextoKZero(int maiorSimbolo) {
         super(maiorSimbolo);
     }
+    
+    @Override
+    protected void addAoModelo(String contexto, int simbolo, boolean[] nosAnteriores) throws IOException {
+    	contexto = " ";
+    	super.addAoModelo(contexto, simbolo, nosAnteriores);
+    }
+    
+    @Override
+    protected double getInfo(String contexto, int simbolo, boolean[] nosAnteriores) throws IOException {
+    	contexto = " ";
+    	return super.getInfo(contexto, simbolo, nosAnteriores);
+    }
+    
 
     @Override
     public void codifica(String contexto, int simbolo) throws IOException {
