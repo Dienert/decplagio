@@ -5,14 +5,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Scanner;
-
-import com.sun.org.apache.bcel.internal.generic.SALOAD;
 
 import ppmc.api.ContextoK;
 import ppmc.api.ContextoKMenosUm;
 import ppmc.api.ContextoKZero;
+import ppmc.api.DesvioPadrao;
 import ppmc.codificador.ArithEncoder;
 import ppmc.io.BitInputStream;
 
@@ -91,6 +89,7 @@ public class Encoder {
         		for(int i = 0; i < contextosK.length; i++){
         			fileWriter.write(contextosK[i].toString());
         		}        		
+        		fileWriter.close();
         	} catch (Exception e) {
         		e.printStackTrace();
         	}

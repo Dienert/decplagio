@@ -2,7 +2,6 @@
 package ppmc.api;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Scanner;
 
 /**
@@ -23,6 +22,29 @@ public class ContextoKMenosUm extends ContextoK {
     }
 
     @Override
+    protected void addAoModelo(String contexto, int simbolo, boolean[] nosAnteriores) throws IOException {
+
+        if(simbolo == freqs.length){
+//        	fileWriter.close();
+            throw new IOException("EOF");
+        }
+        
+        freqs[simbolo] = 0;
+        total--;
+    }
+    
+    @Override
+    protected double getInfo(String contexto, int simbolo, boolean[] nosAnteriores) throws IOException {
+    	
+        if(simbolo == freqs.length){
+//        	fileWriter.close();
+        	throw new IOException("EOF");
+        }
+        
+        return DesvioPadrao.log2(((double)total)/freqs[simbolo]);        
+    }
+    
+    @Override
     public void codifica(String contexto, int simbolo, boolean nosAnteriores[]) throws IOException {
 
         int low = 0, high;
@@ -35,6 +57,7 @@ public class ContextoKMenosUm extends ContextoK {
 
         high = low + freqs[simbolo];
 
+        fileWriter.write(freqs[simbolo] + " " + total + " ");
         arithEncoder.encode(low, high, total);
 
         /* Debug */
@@ -44,8 +67,11 @@ public class ContextoKMenosUm extends ContextoK {
             System.out.printf("Codificando %c no contexto -1 com low = %d high = %d total = %d\n", simbolo, low, high, total);
         /* Debug */
         
-        if(simbolo == maxSimbolos)            
+        if(simbolo == maxSimbolos){
+        	fileWriter.close();
             throw new IOException("EOF");
+        }
+        
         if(modificarModelo){
         	freqs[simbolo] = 0;
         	total--;
@@ -93,7 +119,7 @@ public class ContextoKMenosUm extends ContextoK {
 	@Override
 	public void fromScanner(Scanner scanner) {
 		Scanner linha;
-		String prefixo, contexto = "";
+		String prefixo = "";
 		
 		for(int i = 0; i < freqs.length; i++)
 			freqs[i] = 0;
