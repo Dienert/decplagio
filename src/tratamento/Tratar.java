@@ -5,8 +5,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Normalizer;
-import java.util.HashMap;
-import java.util.TreeSet;
 
 public class Tratar {
 	
