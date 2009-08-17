@@ -57,7 +57,7 @@ public class PreProcessamento {
 
 	public static String processa (String s) {
 		
-		StringTokenizer token = new StringTokenizer(s, " \n\t", false);
+		StringTokenizer token = new StringTokenizer(s, "\n\t", false);
 		s = "";
 		while (token.hasMoreElements()) s += token.nextElement();
 
