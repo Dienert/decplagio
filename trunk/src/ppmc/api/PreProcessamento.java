@@ -40,7 +40,7 @@ public class PreProcessamento {
 					System.err.println("Não foi possível escrever no arquivo: "+output);
 					System.exit(0);
 				}
-				char[] buffer = new char[64000];
+				char[] buffer = new char[16384];
 				int numLidos;
 				String lido;
 				try {
