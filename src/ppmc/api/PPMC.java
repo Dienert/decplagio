@@ -95,12 +95,14 @@ public class PPMC {
             for(int i = 1; i < maiorContexto+1; i++){
                 simbolo = bis.nextBits(nBitsPorSimbolo);
                 info = contextosK[i].getInfo(contexto, simbolo);
+//                System.out.println("info = " + info);
                 fila.add(simbolo, desvio.dentroDoDesvio(info));
                 contexto += (char)simbolo;
             }
             while(simbolo < maiorSimbolo + 1){
                 simbolo = bis.nextBits(nBitsPorSimbolo);
                 info = contextosK[maiorContexto+1].getInfo(contexto, simbolo);
+//                System.out.println("info = " + info);
                 anterior = atual;
                 atual = fila.add(simbolo, desvio.dentroDoDesvio(info));
                 if(anterior == false && atual == true){

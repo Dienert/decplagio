@@ -68,7 +68,6 @@ public class ContextoK {
         if(freqs == null){
             return proximo.getInfo(contexto.substring(1), simbolo, nosAnteriores);
         } else {
-        	
         	for(int i = 0; i < escape+2; i++){
         		if(freqs.get(i) != null && !nosAnteriores[i]){
         			total += freqs.get(i);
@@ -236,41 +235,37 @@ public class ContextoK {
 	}    
 
 	public void fromScanner(Scanner scanner){
-		Scanner linha = null;
+		String linha = null;
 		String prefixo = "", contexto = "";
 		HashMap<Integer, Integer> freqs = new HashMap<Integer, Integer>();
-		if(scanner.hasNextLine()){
-			linha = new Scanner(scanner.nextLine());
-			if(linha.hasNext())
-				prefixo = linha.next();
-		}
-		
-		while(!prefixo.equals("new k") && scanner.hasNextLine()) {
-			if(prefixo.equals("c=")){
-				map.put(contexto, freqs);
-				contexto = linha.nextLine();
+				
+		while(scanner.hasNextLine()) {
+			linha = scanner.nextLine(); 
+			
+			if(linha.startsWith("c=")){
+				if(contexto.length() != 0)
+					map.put(contexto, freqs);
+				contexto = linha.substring(3);
 				freqs = new HashMap<Integer, Integer>();
-			} else if(prefixo.equals("o=")){
-				int simb = linha.nextInt();
-				int freq = linha.nextInt();
+			} else if(linha.startsWith("o=")){
+				Scanner sc = new Scanner(linha.substring(3));
+				int simb = sc.nextInt();
+				int freq = sc.nextInt();
 				freqs.put(simb, freq);
-			}			
-			linha = new Scanner(scanner.nextLine());
-			if(!linha.hasNext())
+			} else if(linha.startsWith("nk"))
 				break;
-			prefixo = linha.next();
 		}	
 	}
 	
     public String toString() {
-    	StringBuilder builder = new StringBuilder();
-    	builder.append("new k\n");
+    	StringBuilder builder = new StringBuilder();    	
     	for(String cont : map.keySet()){
     		builder.append("c= " +  cont + "\n");
     		for(int simb : map.get(cont).keySet()){
     			builder.append("o= " + simb + " " + map.get(cont).get(simb) + "\n");
     		}    		
     	}
+    	builder.append("nk\n");
     	return builder.toString();
     }
 	
