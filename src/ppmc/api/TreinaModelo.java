@@ -26,11 +26,11 @@ public class TreinaModelo {
 //				lista.addAll(ppm.getListaDeInfos(dir + "/" + dir.list()[i],	modelo));
 //			}
 			DesvioPadrao desvioPadrao = new DesvioPadrao(lista);
-			String nomeSaida = dir+"/"+dir.list()[1]+".teste";
+			String nomeSaida = dir+"/"+dir.list()[1]+".html";
 			File output = new File(nomeSaida);
 			output.createNewFile();
 			ppm.encontraPlagio(dir + "/" + dir.list()[1], nomeSaida, null, modelo, desvioPadrao);
-//			ppm.encontraPlagio(aCompactar, "files/sqrt.txt", null, modelo, desvioPadrao);
+//			ppm.encontraPlagio(aCompactar, aCompactar+".html", null, modelo, desvioPadrao);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

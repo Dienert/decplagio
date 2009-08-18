@@ -106,9 +106,9 @@ public class PPMC {
                 anterior = atual;
                 atual = fila.add(simbolo, desvio.dentroDoDesvio(info));
                 if(anterior == false && atual == true){
-                	fileWriter.write("<u>");
+                	fileWriter.write("<b>");
                 } else if(anterior == true && atual == false){
-                	fileWriter.write("</u>");
+                	fileWriter.write("</b>");
                 }
                 contexto = contexto.substring(1) + (char)simbolo;
             }
