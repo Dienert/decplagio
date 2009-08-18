@@ -15,26 +15,26 @@ public class NewMain {
 //       String descompactado = "files/sTRP.html";
 //       String path = "teste";
        String modelo = "modelo.txt";
-       File dir = new File("teste");
+       File dir = new File("machado_de_assis_mod");
        
-       PPMC ppm = new PPMC(8, 6);
+       PPMC ppm = new PPMC(8, 3);
        
-//       ppm.modificaModelo(dir+"/"+dir.list()[0], null, modelo);       
+       ppm.modificaModelo(dir+"/"+dir.list()[1], null, modelo);       
        
-//       for(int i = 1; i < dir.list().length; i++){
-//    	   ppm.modificaModelo(dir+"/"+dir.list()[i], modelo, modelo);
-//       }
-       LinkedList<Double> lista = new LinkedList<Double>();
-       lista = ppm.getListaDeInfos(dir+"/"+dir.list()[0], modelo);
+       for(int i = 2; i < dir.list().length && i < 4; i++){
+    	   ppm.modificaModelo(dir+"/"+dir.list()[i], modelo, modelo);
+       }
+//       LinkedList<Double> lista = new LinkedList<Double>();
+//       lista = ppm.getListaDeInfos(dir+"/"+dir.list()[1], modelo);
 //
-//       for(int i = 1; i < dir.list().length; i++){
+//       for(int i = 2; i < dir.list().length && i < 4; i++){
 //    	   lista.addAll(ppm.getListaDeInfos(dir+"/"+dir.list()[i], modelo));
 //       }
-       
-       DesvioPadrao desvioPadrao = new DesvioPadrao(lista);
-       ppm.encontraPlagio(dir+"/"+dir.list()[0], dir.list()[0], null, modelo, desvioPadrao);
-       ppm.encontraPlagio(aCompactar, "sqrt.txt", null, modelo, desvioPadrao);
-  
+//       
+//       DesvioPadrao desvioPadrao = new DesvioPadrao(lista);
+//       ppm.encontraPlagio(dir+"/"+dir.list()[1], dir.list()[1], null, modelo, desvioPadrao);
+//       ppm.encontraPlagio(aCompactar, "sqrt.txt", null, modelo, desvioPadrao);
+//  
        System.out.println(System.currentTimeMillis() - time+"ns");
        
    }

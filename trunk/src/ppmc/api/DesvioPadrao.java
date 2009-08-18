@@ -30,7 +30,7 @@ public class DesvioPadrao {
 	}
 
 	public boolean dentroDoDesvio(double info){
-		return (info < valorMedio+(valorDesvio/8) && info > valorMedio-(valorDesvio/8));
+		return (info < valorMedio+(valorDesvio/5) && info > valorMedio-(valorDesvio/5));
 	}
 	
 	public double getValorMedio() {
