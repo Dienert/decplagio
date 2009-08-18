@@ -40,16 +40,15 @@ public class PreProcessamento {
 					System.err.println("Não foi possível escrever no arquivo: "+output);
 					System.exit(0);
 				}
-				char[] buffer = new char[1024];
+				char[] buffer = new char[16384];
 				int numLidos;
 				String lido;
 				try {
-					while ((numLidos = original.read(buffer)) != -1) {
-						lido = String.valueOf(buffer, 0, numLidos);
-						lido = lido.toLowerCase();
-						lido = processa(lido);
-						modificado.write(lido);
-					}
+					numLidos = original.read(buffer);
+					lido = String.valueOf(buffer, 0, numLidos);
+					lido = lido.toLowerCase();
+					lido = processa(lido);
+					modificado.write(lido);
 				} catch (IOException e1) {
 					System.err.println("Problema na leitura e escrita dos arquivos.");
 					System.exit(0);
