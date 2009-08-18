@@ -40,7 +40,7 @@ public class PreProcessamento {
 					System.err.println("Não foi possível escrever no arquivo: "+output);
 					System.exit(0);
 				}
-				char[] buffer = new char[16384];
+				char[] buffer = new char[64000];
 				int numLidos;
 				String lido;
 				try {
@@ -67,9 +67,9 @@ public class PreProcessamento {
 
 	public static String processa (String s) {
 		
-		StringTokenizer token = new StringTokenizer(s, "\n\t", false);
-		s = "";
-		while (token.hasMoreElements()) s += token.nextElement();
+		//StringTokenizer token = new StringTokenizer(s, "\n\t", false);
+		//s = "";
+		//while (token.hasMoreElements()) s += token.nextElement();
 
 		s = s.replace('â', 'a');
 		s = s.replace('ä', 'a');
