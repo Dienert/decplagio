@@ -2,6 +2,7 @@ package ppmc.api;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -12,46 +13,56 @@ public class PreProcessamento {
 	static BufferedReader original;
 	static BufferedWriter modificado;
 	public static void main (String[] args) {
-		if (args.length != 1) {
-			System.err.println("É preciso passar o nome do arquivo de texto a ser processado.");
-			System.exit(0);
-		}
+//		if (args.length != 1) {
+//			System.err.println("Ã‰ preciso passar o nome do arquivo de texto a ser processado.");
+//			System.exit(0);
+//		}
 
-		try {
-			original = new BufferedReader(new FileReader(args[0]));
-			String nomeSaida = (args[0].lastIndexOf('.') != -1) ? args[0].substring(0,args[0].lastIndexOf('.'))
-					+ "mod.txt" : args[0] + "mod.txt";
-
-			modificado = new BufferedWriter(new FileWriter(nomeSaida));
-		} catch (FileNotFoundException e) {
-			System.err.println("Arquivo nao encontrado.");
-			System.exit(0);
-		} catch (IOException e) {
-			System.err.println("Problema na criacao dos arquivos.");
-			System.exit(0);
-		}
-
-		char[] buffer = new char[1024];
-		int numLidos;
-		String lido;
-		try {
-			while ((numLidos = original.read(buffer)) != -1) {
-				lido = String.valueOf(buffer, 0, numLidos);
-				lido = lido.toLowerCase();
-				lido = processa(lido);
-				modificado.write(lido);
+		File diretorioComArquivosOriginais = new File("machado_de_assis");
+		File diretorioComArquivosTratados = new File("machado_de_assis_mod");
+		
+		for (String fileName : diretorioComArquivosOriginais.list()) {
+			String input = diretorioComArquivosOriginais+"\\"+fileName;
+			String nomeSaida = fileName+".tratado.txt";
+			String output = diretorioComArquivosTratados+"\\"+nomeSaida;
+			if (!fileName.equals(".svn")) {
+				try {
+					original = new BufferedReader(new FileReader(input));
+				} catch (FileNotFoundException e) {
+					System.err.println("Arquivo nao encontrado: "+input);
+					System.exit(0);
+				}
+				try {
+					File file = new File(output);
+					file.createNewFile();
+					modificado = new BufferedWriter(new FileWriter(file));
+				} catch (IOException e) {
+					System.err.println("NÃ£o foi possÃ­vel escrever no arquivo: "+output);
+					System.exit(0);
+				}
+				char[] buffer = new char[1024];
+				int numLidos;
+				String lido;
+				try {
+					while ((numLidos = original.read(buffer)) != -1) {
+						lido = String.valueOf(buffer, 0, numLidos);
+						lido = lido.toLowerCase();
+						lido = processa(lido);
+						modificado.write(lido);
+					}
+				} catch (IOException e1) {
+					System.err.println("Problema na leitura e escrita dos arquivos.");
+					System.exit(0);
+				}
+				
+				try {
+					original.close();
+					modificado.close();
+				} catch (IOException e) {
+					System.err.println("Erro no fechamento das streams.");
+					System.exit(0);
+				}
 			}
-		} catch (IOException e1) {
-			System.err.println("Problema na leitura e escrita dos arquivos.");
-			System.exit(0);
-		}
-
-		try {
-			original.close();
-			modificado.close();
-		} catch (IOException e) {
-			System.err.println("Erro no fechamento das streams.");
-			System.exit(0);
 		}
 	}
 
@@ -61,36 +72,36 @@ public class PreProcessamento {
 		s = "";
 		while (token.hasMoreElements()) s += token.nextElement();
 
-		s = s.replace('â', 'a');
-		s = s.replace('ä', 'a');
-		s = s.replace('à', 'a');
-		s = s.replace('ã', 'a');
-		s = s.replace('á', 'a');
+		s = s.replace('Ã¢', 'a');
+		s = s.replace('Ã¤', 'a');
+		s = s.replace('Ã ', 'a');
+		s = s.replace('Ã£', 'a');
+		s = s.replace('Ã¡', 'a');
 		
-		s = s.replace('ê', 'e');
-		s = s.replace('é', 'e');
-		s = s.replace('è', 'e');
-		s = s.replace('ë', 'e');
+		s = s.replace('Ãª', 'e');
+		s = s.replace('Ã©', 'e');
+		s = s.replace('Ã¨', 'e');
+		s = s.replace('Ã«', 'e');
 		
-		s = s.replace('í', 'i');
-		s = s.replace('ï', 'i');
-		s = s.replace('ì', 'i');
-		s = s.replace('î', 'i');
+		s = s.replace('Ã­', 'i');
+		s = s.replace('Ã¯', 'i');
+		s = s.replace('Ã¬', 'i');
+		s = s.replace('Ã®', 'i');
 		
-		s = s.replace('õ', 'o');
-		s = s.replace('ó', 'o');
-		s = s.replace('ö', 'o');
-		s = s.replace('ò', 'o');
-		s = s.replace('ô', 'o');
+		s = s.replace('Ãµ', 'o');
+		s = s.replace('Ã³', 'o');
+		s = s.replace('Ã¶', 'o');
+		s = s.replace('Ã²', 'o');
+		s = s.replace('Ã´', 'o');
 
-		s = s.replace('ú', 'u');
-		s = s.replace('û', 'u');
-		s = s.replace('ù', 'u');
-		s = s.replace('ü', 'u');
+		s = s.replace('Ãº', 'u');
+		s = s.replace('Ã»', 'u');
+		s = s.replace('Ã¹', 'u');
+		s = s.replace('Ã¼', 'u');
 
-		s = s.replace('ç', 'c');
+		s = s.replace('Ã§', 'c');
 
-		s = s.replace('ñ', 'n');
+		s = s.replace('Ã±', 'n');
 		
 		return s;
 	}
