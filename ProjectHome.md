@@ -1,0 +1,1 @@
+Um programa detector de plágios
